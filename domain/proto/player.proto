@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "domain/position.proto";
+import "domain/time.proto";
+
+message Player {
+  string name = 1;
+  int32 age = 2;
+  Position position = 3;
+  string country = 4;
+  Time time = 5;
+  float height = 6;
+  int32 weight = 7;
+}
