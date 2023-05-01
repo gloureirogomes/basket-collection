@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package domain;
 option go_package = "domain/proto";
 
