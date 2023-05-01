@@ -1,10 +1,12 @@
 syntax = "proto3";
+package domain;
+option go_package = "domain/proto";
 
-import "domain/time.proto";
-import "domain/player.proto";
+import "team.proto";
+import "player.proto";
 
 message Jersey {
-  Time time = 1;
+  Team team = 1;
   Player player = 2;
   int32 number = 3;
 }

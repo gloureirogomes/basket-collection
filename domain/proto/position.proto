@@ -1,3 +1,8 @@
+syntax = "proto3";
+
+package domain;
+option go_package = "domain/proto";
+
 enum Position {
   POINT_GUARD = 0;
   SHOOTING_GUARD = 1;
