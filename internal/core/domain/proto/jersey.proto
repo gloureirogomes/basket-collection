@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package domain;
-option go_package = "domain/proto";
+option go_package = "./domain";
 
 import "team.proto";
 import "player.proto";
