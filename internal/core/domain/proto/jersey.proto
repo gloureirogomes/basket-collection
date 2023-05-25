@@ -7,7 +7,8 @@ import "team.proto";
 import "player.proto";
 
 message Jersey {
-  Team team = 1;
-  Player player = 2;
-  int32 number = 3;
+  string jersey_id = 1;
+  Team team = 2;
+  Player player = 3;
+  int32 number = 4;
 }

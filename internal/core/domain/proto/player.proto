@@ -7,11 +7,12 @@ import "position.proto";
 import "team.proto";
 
 message Player {
-  string name = 1;
-  int32 age = 2;
-  Position position = 3;
-  string country = 4;
-  Team team = 5;
-  float height = 6;
-  int32 weight = 7;
+  string player_id = 1;
+  string name = 2;
+  int32 age = 3;
+  Position position = 4;
+  string country = 5;
+  Team team = 6;
+  float height = 7;
+  int32 weight = 8;
 }
