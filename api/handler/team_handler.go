@@ -15,12 +15,12 @@ import (
 var log = logger.GetLogger()
 
 type TeamHandler struct {
-	TeamService service.TeamService
+	teamService service.TeamService
 }
 
 func NewTeamHandler(service service.TeamService) TeamHandler {
 	return TeamHandler{
-		TeamService: service,
+		teamService: service,
 	}
 }
 
@@ -38,7 +38,7 @@ func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 		State:      teamSchemaToInsert.State,
 	}
 
-	teamInserted, err := t.TeamService.InsertTeam(ctx.Request.Context(), teamToInsert)
+	teamInserted, err := t.teamService.InsertTeam(ctx.Request.Context(), teamToInsert)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		log.Error("error to insert team", zap.Field{Type: zapcore.StringType, String: err.Error()})
@@ -49,7 +49,7 @@ func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 }
 
 func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
-	teamsToReturn, err := t.TeamService.GetAllTeams(ctx.Request.Context())
+	teamsToReturn, err := t.teamService.GetAllTeams(ctx.Request.Context())
 	if len(teamsToReturn) == 0 {
 		ctx.JSON(http.StatusNotFound, nil)
 	}
