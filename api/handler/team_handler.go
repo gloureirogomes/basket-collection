@@ -47,3 +47,18 @@ func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"Team data saved with success!": teamInserted})
 }
+
+func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
+	teamsToReturn, err := t.TeamService.GetAllTeams(ctx.Request.Context())
+	if len(teamsToReturn) == 0 {
+		ctx.JSON(http.StatusNotFound, nil)
+	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error("error to get all teams", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"teams": teamsToReturn})
+}

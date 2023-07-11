@@ -30,3 +30,13 @@ func (t TeamService) InsertTeam(ctx context.Context, team *domain.Team) (*domain
 
 	return team, nil
 }
+
+func (t TeamService) GetAllTeams(ctx context.Context) ([]*domain.Team, error) {
+	teamsToReturn, err := t.databaseRepository.GetAll(ctx)
+	if err != nil {
+		log.Error("error to get all teams", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return []*domain.Team{}, err
+	}
+
+	return teamsToReturn, nil
+}

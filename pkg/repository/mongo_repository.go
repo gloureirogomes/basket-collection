@@ -5,6 +5,8 @@ import (
 
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -15,9 +17,10 @@ type MongoRepository struct {
 }
 
 type TeamMongoDocument struct {
-	Name       string `bson:"name"`
-	Conference string `bson:"conference"`
-	State      string `bson:"state"`
+	Id         primitive.ObjectID `bson:"_id"`
+	Name       string             `bson:"name"`
+	Conference string             `bson:"conference"`
+	State      string             `bson:"state"`
 }
 
 func newTeamMongoDocument(team *domain.Team) TeamMongoDocument {
@@ -46,6 +49,34 @@ func (m MongoRepository) InsertTeam(ctx context.Context, team *domain.Team) erro
 	}
 
 	return nil
+}
+
+// GetAll used to get all database team data
+func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
+	filter := bson.D{}
+
+	cursor, err := m.getCollection().Find(ctx, filter)
+	if err != nil {
+		log.Error("error to get team data on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return []*domain.Team{}, err
+	}
+
+	teamsMongoDocument := []TeamMongoDocument{}
+	if err = cursor.All(ctx, &teamsMongoDocument); err != nil {
+		return []*domain.Team{}, err
+	}
+
+	teamsToReturn := []*domain.Team{}
+	for _, team := range teamsMongoDocument {
+		teamsToReturn = append(teamsToReturn, &domain.Team{
+			TeamId:     team.Id.Hex(),
+			Name:       team.Name,
+			Conference: team.Conference,
+			State:      team.State,
+		})
+	}
+
+	return teamsToReturn, nil
 }
 
 func (m MongoRepository) getCollection() *mongo.Collection {

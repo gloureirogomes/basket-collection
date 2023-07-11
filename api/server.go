@@ -45,6 +45,7 @@ func (s Server) setupRoutes() *gin.Engine {
 	routerGroup := router.Group("/basket-collection")
 
 	routerGroup.POST("/team", s.teamHandler.CreateTeam)
+	routerGroup.GET("/teams", s.teamHandler.GetAllTeams)
 
 	return router
 }
