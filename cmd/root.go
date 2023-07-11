@@ -6,7 +6,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Short: "A main CLI to crawler",
+	Short: "A main command to start API",
 	Long:  "Command used to start the basket collection API",
 }
 
