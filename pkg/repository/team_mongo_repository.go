@@ -6,7 +6,6 @@ import (
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -17,10 +16,9 @@ type MongoRepository struct {
 }
 
 type TeamMongoDocument struct {
-	Id         primitive.ObjectID `bson:"_id"`
-	Name       string             `bson:"name"`
-	Conference string             `bson:"conference"`
-	State      string             `bson:"state"`
+	Name       string `bson:"name"`
+	Conference string `bson:"conference"`
+	State      string `bson:"state"`
 }
 
 func newTeamMongoDocument(team *domain.Team) TeamMongoDocument {
@@ -69,7 +67,6 @@ func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 	teamsToReturn := []*domain.Team{}
 	for _, team := range teamsMongoDocument {
 		teamsToReturn = append(teamsToReturn, &domain.Team{
-			TeamId:     team.Id.Hex(),
 			Name:       team.Name,
 			Conference: team.Conference,
 			State:      team.State,
