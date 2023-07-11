@@ -6,10 +6,6 @@ setup:
 	go mod tidy
 	go mod verify
 
-## lint: run all linters
-lint:
-	golangci-lint run ./...	
-
 ## build: build to create executable file
 build:
 	go build -o ${APP_NAME} .

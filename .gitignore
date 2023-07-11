@@ -17,6 +17,8 @@
 
 # Generated files
 .idea/**/contentModel.xml
+.env
+basket-collection
 
 # Sensitive or high-churn files
 .idea/**/dataSources/

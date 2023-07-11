@@ -31,6 +31,7 @@ func newMongoClient(ctx context.Context) *mongoClient {
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		log.Error("error to connect on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return &mongoClient{}
 	}
 
 	return &mongoClient{
