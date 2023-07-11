@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package domain;
+option go_package = "./domain";
+
+import "team.proto";
+import "player.proto";
+
+message Jersey {
+  string jersey_id = 1;
+  Team team = 2;
+  Player player = 3;
+  int32 number = 4;
+}

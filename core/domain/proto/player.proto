@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package domain;
+option go_package = "./domain";
+
+import "position.proto";
+import "team.proto";
+
+message Player {
+  string player_id = 1;
+  string name = 2;
+  int32 age = 3;
+  Position position = 4;
+  string country = 5;
+  Team team = 6;
+  float height = 7;
+  int32 weight = 8;
+}
