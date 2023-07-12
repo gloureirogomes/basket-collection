@@ -97,3 +97,42 @@ func TestGetAllTeams(t *testing.T) {
 		})
 	}
 }
+
+func TestGetOneTeam(t *testing.T) {
+	givenCtx := context.Background()
+	teamToReturn := &domain.Team{
+		Name:       "Golden State Warriors",
+		Conference: "West",
+		State:      "California",
+	}
+
+	testCases := map[string]func(*testing.T, *mocktest.TeamDatabaseRepositoryMock){
+		"should return team data with success": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
+			service := service.NewTeamService(teamRepository)
+
+			teamRepository.On("GetOne", givenCtx, teamToReturn.GetName()).Return(teamToReturn, nil)
+
+			teamReturned, err := service.GetOneTeam(givenCtx, teamToReturn.GetName())
+			assert.NotEmpty(t, teamReturned)
+			assert.NoError(t, err)
+		},
+		"should not return team data when not found on database": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
+			notSavedTeamName := "Portland Trail Blazers"
+			service := service.NewTeamService(teamRepository)
+
+			teamRepository.On("GetOne", givenCtx, notSavedTeamName).Return(&domain.Team{}, nil)
+
+			teamReturned, err := service.GetOneTeam(givenCtx, notSavedTeamName)
+			assert.Empty(t, teamReturned)
+			assert.NoError(t, err)
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			teamRepository := new(mocktest.TeamDatabaseRepositoryMock)
+
+			testCase(t, teamRepository)
+		})
+	}
+}
