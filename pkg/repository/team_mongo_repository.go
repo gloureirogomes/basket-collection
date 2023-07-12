@@ -76,6 +76,25 @@ func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 	return teamsToReturn, nil
 }
 
+// GetOne used to get one database team data
+func (m MongoRepository) GetOne(ctx context.Context, teamName string) (*domain.Team, error) {
+	filter := bson.D{{Key: "name", Value: teamName}}
+
+	teamMongoDocument := TeamMongoDocument{}
+	if err := m.getCollection().FindOne(ctx, filter).Decode(&teamMongoDocument); err != nil {
+		log.Error("error to get one team on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return &domain.Team{}, err
+	}
+
+	teamToReturn := &domain.Team{
+		Name:       teamMongoDocument.Name,
+		Conference: teamMongoDocument.Conference,
+		State:      teamMongoDocument.State,
+	}
+
+	return teamToReturn, nil
+}
+
 func (m MongoRepository) getCollection() *mongo.Collection {
 	databaseName := viper.GetString("MONGO_DATABASE_NAME")
 	teamCollection := viper.GetString("MONGO_TEAM_COLLECTION")

@@ -14,4 +14,7 @@ type TeamDatabaseRepository interface {
 
 	//GetAll used to get all database team data
 	GetAll(ctx context.Context) ([]*domain.Team, error)
+
+	//GetOne used to get one database team data
+	GetOne(ctx context.Context, teamName string) (*domain.Team, error)
 }

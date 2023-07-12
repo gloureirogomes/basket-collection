@@ -62,3 +62,23 @@ func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"teams": teamsToReturn})
 }
+
+func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
+	teamName := request.GetOneTeamSchema{}
+	if err := ctx.ShouldBindQuery(&teamName); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	teamToReturn, err := t.teamService.GetOneTeam(ctx.Request.Context(), teamName.Name)
+	if len([]*domain.Team{teamToReturn}) == 0 {
+		ctx.JSON(http.StatusNotFound, nil)
+	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error("error to get one team", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"team": teamToReturn})
+}
