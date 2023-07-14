@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	apiErrors "github.com/GabrielLoureiroGomes/basket-collection/api/handler/errors"
 	"github.com/GabrielLoureiroGomes/basket-collection/api/schema/request"
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/GabrielLoureiroGomes/basket-collection/logger"
@@ -66,19 +67,30 @@ func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
 func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
 	teamName := request.GetOneTeamSchema{}
 	if err := ctx.ShouldBindQuery(&teamName); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		buildErrorResponse(ctx, http.StatusBadRequest, apiErrors.ErrBindParams)
 	}
 
 	teamToReturn, err := t.teamService.GetOneTeam(ctx.Request.Context(), teamName.Name)
 	if len([]*domain.Team{teamToReturn}) == 0 {
-		ctx.JSON(http.StatusNotFound, nil)
+		buildErrorResponse(ctx, http.StatusNotFound, domain.ErrNotFound)
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		buildErrorResponse(ctx, http.StatusInternalServerError, err)
 		log.Error("error to get one team", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"team": teamToReturn})
+	ctx.JSON(http.StatusOK, teamToReturn)
+}
+
+func buildErrorResponse(gin *gin.Context, statusCode int, err error) {
+	errToReturn := err
+	if err == nil {
+		errToReturn = apiErrors.ErrUnknown
+	}
+
+	if statusCode == http.StatusInternalServerError {
+		gin.String(statusCode, errToReturn.Error())
+	}
 }
