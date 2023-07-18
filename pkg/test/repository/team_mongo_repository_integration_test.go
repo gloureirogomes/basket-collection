@@ -73,9 +73,12 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsert() {
 
 	suite.Suite.T().Run("should return error to try to insert on invalid database", func(t *testing.T) {
 		defer func() {
+			viper.Reset()
 			suite.setupTestEnvironment()
 		}()
-		viper.Set("MONGO_DATABASE", "")
+		viper.Set("MONGO_USER", "")
+		viper.Set("MONGO_PASSWORD", "")
+		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
 		repository := repo.NewMongoRepository(ctx)
 		err := repository.InsertTeam(ctx, givenTeam)
