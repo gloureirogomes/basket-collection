@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/GabrielLoureiroGomes/basket-collection/core/repository"
@@ -36,6 +37,9 @@ func (t TeamService) InsertTeam(ctx context.Context, team *domain.Team) (*domain
 func (t TeamService) GetAllTeams(ctx context.Context) ([]*domain.Team, error) {
 	teamsToReturn, err := t.databaseRepository.GetAll(ctx)
 	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			return []*domain.Team{}, domain.ErrNotFound
+		}
 		log.Error("error to get all teams", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return []*domain.Team{}, err
 	}
@@ -47,6 +51,9 @@ func (t TeamService) GetAllTeams(ctx context.Context) ([]*domain.Team, error) {
 func (t TeamService) GetOneTeam(ctx context.Context, teamName string) (*domain.Team, error) {
 	teamToReturn, err := t.databaseRepository.GetOne(ctx, teamName)
 	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			return &domain.Team{}, domain.ErrNotFound
+		}
 		log.Error("error to get one team", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return &domain.Team{}, err
 	}

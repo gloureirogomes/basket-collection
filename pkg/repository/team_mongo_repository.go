@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/spf13/viper"
@@ -13,20 +14,6 @@ import (
 
 type MongoRepository struct {
 	mongo *mongoClient
-}
-
-type TeamMongoDocument struct {
-	Name       string `bson:"name"`
-	Conference string `bson:"conference"`
-	State      string `bson:"state"`
-}
-
-func newTeamMongoDocument(team *domain.Team) TeamMongoDocument {
-	return TeamMongoDocument{
-		Name:       team.GetName(),
-		Conference: team.GetConference(),
-		State:      team.GetState(),
-	}
 }
 
 func NewMongoRepository(ctx context.Context) MongoRepository {
@@ -52,26 +39,23 @@ func (m MongoRepository) InsertTeam(ctx context.Context, team *domain.Team) erro
 // GetAll used to get all database team data
 func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 	filter := bson.D{}
-
 	cursor, err := m.getCollection().Find(ctx, filter)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		log.Error("error to get team data on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return []*domain.Team{}, err
 	}
 
+	if cursor == nil || err == mongo.ErrNoDocuments {
+		return []*domain.Team{}, domain.ErrNotFound
+	}
+
 	teamsMongoDocument := []TeamMongoDocument{}
 	if err = cursor.All(ctx, &teamsMongoDocument); err != nil {
+		log.Error("error to parse data", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return []*domain.Team{}, err
 	}
 
-	teamsToReturn := []*domain.Team{}
-	for _, team := range teamsMongoDocument {
-		teamsToReturn = append(teamsToReturn, &domain.Team{
-			Name:       team.Name,
-			Conference: team.Conference,
-			State:      team.State,
-		})
-	}
+	teamsToReturn := newTeamListByTeamMongoDocument(teamsMongoDocument)
 
 	return teamsToReturn, nil
 }
@@ -82,6 +66,9 @@ func (m MongoRepository) GetOne(ctx context.Context, teamName string) (*domain.T
 
 	teamMongoDocument := TeamMongoDocument{}
 	if err := m.getCollection().FindOne(ctx, filter).Decode(&teamMongoDocument); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return &domain.Team{}, domain.ErrNotFound
+		}
 		log.Error("error to get one team on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return &domain.Team{}, err
 	}
@@ -100,4 +87,32 @@ func (m MongoRepository) getCollection() *mongo.Collection {
 	teamCollection := viper.GetString("MONGO_TEAM_COLLECTION")
 
 	return m.mongo.client.Database(databaseName).Collection(teamCollection)
+}
+
+type TeamMongoDocument struct {
+	Name       string `bson:"name"`
+	Conference string `bson:"conference"`
+	State      string `bson:"state"`
+}
+
+func newTeamMongoDocument(team *domain.Team) TeamMongoDocument {
+	return TeamMongoDocument{
+		Name:       team.GetName(),
+		Conference: team.GetConference(),
+		State:      team.GetState(),
+	}
+}
+
+func newTeamListByTeamMongoDocument(teams []TeamMongoDocument) []*domain.Team {
+	teamsToReturn := []*domain.Team{}
+
+	for _, team := range teams {
+		teamsToReturn = append(teamsToReturn, &domain.Team{
+			Name:       team.Name,
+			Conference: team.Conference,
+			State:      team.State,
+		})
+	}
+
+	return teamsToReturn
 }

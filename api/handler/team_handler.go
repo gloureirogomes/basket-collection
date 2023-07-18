@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	apiErrors "github.com/GabrielLoureiroGomes/basket-collection/api/handler/errors"
@@ -28,7 +30,7 @@ func NewTeamHandler(service service.TeamService) TeamHandler {
 func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 	teamSchemaToInsert := request.InsertTeamSchema{}
 	if err := ctx.ShouldBindJSON(&teamSchemaToInsert); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		buildErrorResponse(ctx, http.StatusBadRequest, apiErrors.ErrBindParams)
 		log.Error("error to bind json", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return
 	}
@@ -41,27 +43,27 @@ func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 
 	teamInserted, err := t.teamService.InsertTeam(ctx.Request.Context(), teamToInsert)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		buildErrorResponse(ctx, http.StatusInternalServerError, err)
 		log.Error("error to insert team", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"Team data saved with success!": teamInserted})
+	ctx.String(http.StatusCreated, fmt.Sprintf("The %s was inserted with success", teamInserted.GetName()))
 }
 
 func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
 	teamsToReturn, err := t.teamService.GetAllTeams(ctx.Request.Context())
 	if len(teamsToReturn) == 0 {
-		ctx.JSON(http.StatusNotFound, nil)
+		buildErrorResponse(ctx, http.StatusNotFound, domain.ErrNotFound)
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		buildErrorResponse(ctx, http.StatusInternalServerError, err)
 		log.Error("error to get all teams", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"teams": teamsToReturn})
+	ctx.JSON(http.StatusOK, teamsToReturn)
 }
 
 func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
@@ -71,7 +73,7 @@ func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
 	}
 
 	teamToReturn, err := t.teamService.GetOneTeam(ctx.Request.Context(), teamName.Name)
-	if len([]*domain.Team{teamToReturn}) == 0 {
+	if errors.Is(err, domain.ErrNotFound) {
 		buildErrorResponse(ctx, http.StatusNotFound, domain.ErrNotFound)
 	}
 
