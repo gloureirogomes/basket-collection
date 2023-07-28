@@ -13,3 +13,11 @@ build:
 ## run-api: build and run api
 run-api: build
 	./${APP_NAME} api
+
+## test: run all unit tests
+test:
+	go test -race $(ARGS) ./... -coverprofile=coverage.out -short -count=1
+
+## integration test: run all integration tests
+integration-test:
+	go test -race  ./... -run Integration -count=1
