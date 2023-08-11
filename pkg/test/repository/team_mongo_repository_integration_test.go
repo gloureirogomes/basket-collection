@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"testing"
+
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	repo "github.com/GabrielLoureiroGomes/basket-collection/pkg/repository"
 	"github.com/spf13/viper"
@@ -9,7 +11,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"testing"
 )
 
 type TeamMongoRepositoryIntegrationTestSuite struct {
@@ -63,8 +64,8 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TearDownSuite() {
 	viper.Reset()
 }
 
-func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsert() {
-	ctx := context.Background()
+func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsertTeam() {
+	givenCtx := context.Background()
 	givenTeam := &domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
@@ -80,15 +81,104 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsert() {
 		viper.Set("MONGO_PASSWORD", "")
 		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
-		repository := repo.NewMongoRepository(ctx)
-		err := repository.InsertTeam(ctx, givenTeam)
+		repository := repo.NewMongoRepository(givenCtx)
+		err := repository.InsertTeam(givenCtx, givenTeam)
 
 		assert.NotNil(suite.T(), err)
 	})
 
 	suite.Suite.T().Run("should insert team with success", func(t *testing.T) {
-		err := suite.repository.InsertTeam(ctx, givenTeam)
+		err := suite.repository.InsertTeam(givenCtx, givenTeam)
 
+		assert.NoError(suite.T(), err)
+	})
+}
+
+func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetAll() {
+	givenCtx := context.Background()
+	givenTeams := []*domain.Team{
+		{
+			Name:       "Golden State Warriors",
+			Conference: "West",
+			State:      "California",
+		},
+		{
+			Name:       "Los Angeles Lakers",
+			Conference: "West",
+			State:      "California",
+		},
+	}
+
+	suite.Suite.T().Run("should return error to try to get on invalid database", func(t *testing.T) {
+		defer func() {
+			viper.Reset()
+			suite.setupTestEnvironment()
+		}()
+		viper.Set("MONGO_USER", "")
+		viper.Set("MONGO_PASSWORD", "")
+		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
+
+		repository := repo.NewMongoRepository(givenCtx)
+		teams, err := repository.GetAll(givenCtx)
+
+		assert.NotNil(suite.T(), err)
+		assert.Empty(suite.T(), teams)
+	})
+
+	suite.Suite.T().Run("should not return error when not found team on database", func(t *testing.T) {
+		emptyReturn, err := suite.repository.GetAll(givenCtx)
+
+		assert.Empty(suite.T(), emptyReturn)
+		assert.NoError(suite.T(), err)
+	})
+
+	suite.Suite.T().Run("should return team with success", func(t *testing.T) {
+		suite.insertTeamsToTest(t, givenTeams)
+
+		teamsReturned, err := suite.repository.GetAll(givenCtx)
+
+		assert.ElementsMatch(suite.T(), givenTeams, teamsReturned)
+		assert.NoError(suite.T(), err)
+	})
+}
+
+func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
+	givenCtx := context.Background()
+	givenTeam := &domain.Team{
+		Name:       "Los Angeles Lakers",
+		Conference: "West",
+		State:      "California",
+	}
+
+	suite.Suite.T().Run("should return error to try to get on invalid database", func(t *testing.T) {
+		defer func() {
+			viper.Reset()
+			suite.setupTestEnvironment()
+		}()
+		viper.Set("MONGO_USER", "")
+		viper.Set("MONGO_PASSWORD", "")
+		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
+
+		repository := repo.NewMongoRepository(givenCtx)
+		team, err := repository.GetOne(givenCtx, givenTeam.Name)
+
+		assert.NotNil(suite.T(), err)
+		assert.Empty(suite.T(), team)
+	})
+
+	suite.Suite.T().Run("should return domain not found error when doesn't have data on database", func(t *testing.T) {
+		emptyReturn, err := suite.repository.GetOne(givenCtx, givenTeam.Name)
+
+		assert.Empty(suite.T(), emptyReturn)
+		assert.ErrorIs(suite.T(), err, domain.ErrNotFound)
+	})
+
+	suite.Suite.T().Run("should return team with success", func(t *testing.T) {
+		suite.insertTeamsToTest(t, []*domain.Team{givenTeam})
+
+		teamReturned, err := suite.repository.GetOne(givenCtx, givenTeam.Name)
+
+		assert.Equal(suite.T(), givenTeam, teamReturned)
 		assert.NoError(suite.T(), err)
 	})
 }
@@ -96,4 +186,11 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsert() {
 func (suite *TeamMongoRepositoryIntegrationTestSuite) setupTestEnvironment() {
 	viper.Set("MONGO_DATABASE_NAME", "basket-collection")
 	viper.Set("MONGO_TEAM_COLLECTION", "team")
+}
+
+func (suite *TeamMongoRepositoryIntegrationTestSuite) insertTeamsToTest(t *testing.T, teams []*domain.Team) {
+	for _, team := range teams {
+		err := suite.repository.InsertTeam(context.Background(), team)
+		assert.NoError(t, err)
+	}
 }
