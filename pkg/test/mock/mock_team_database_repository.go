@@ -28,3 +28,9 @@ func (m *TeamDatabaseRepositoryMock) GetOne(ctx context.Context, teamName string
 	arguments := m.Called(ctx, teamName)
 	return arguments.Get(0).(*domain.Team), arguments.Error(1)
 }
+
+// Delete used to delete one database team data
+func (m *TeamDatabaseRepositoryMock) Delete(ctx context.Context, teamName string) error {
+	arguments := m.Called(ctx, teamName)
+	return arguments.Error(0)
+}

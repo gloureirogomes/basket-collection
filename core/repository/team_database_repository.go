@@ -17,4 +17,7 @@ type TeamDatabaseRepository interface {
 
 	//GetOne used to get one database team data
 	GetOne(ctx context.Context, teamName string) (*domain.Team, error)
+
+	//Delete used to delete one database team data
+	Delete(ctx context.Context, teamName string) error
 }

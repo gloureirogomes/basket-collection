@@ -190,6 +190,48 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
 	})
 }
 
+func (suite *TeamMongoRepositoryIntegrationTestSuite) TestDelete() {
+	givenCtx := context.Background()
+	givenTeam := &domain.Team{
+		Name:       "Los Angeles Lakers",
+		Conference: "West",
+		State:      "California",
+	}
+
+	suite.Suite.T().Run("should return error to try to delete on invalid database", func(t *testing.T) {
+		defer func() {
+			viper.Reset()
+			suite.setupTestEnvironment()
+		}()
+		viper.Set("MONGO_USER", "")
+		viper.Set("MONGO_PASSWORD", "")
+		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
+
+		repository := repo.NewMongoRepository(givenCtx)
+		err := repository.Delete(givenCtx, givenTeam.Name)
+
+		assert.NotNil(suite.T(), err)
+	})
+
+	suite.Suite.T().Run("should return domain not found error when doesn't have data on database", func(t *testing.T) {
+		err := suite.repository.Delete(givenCtx, givenTeam.Name)
+
+		assert.ErrorIs(suite.T(), err, domain.ErrNotFound)
+	})
+
+	suite.Suite.T().Run("should delete team with success", func(t *testing.T) {
+		suite.insertTeamsToTest(t, []*domain.Team{givenTeam})
+
+		err := suite.repository.Delete(givenCtx, givenTeam.Name)
+
+		assert.NoError(suite.T(), err)
+
+		teams, err := suite.repository.GetAll(givenCtx)
+		assert.Empty(suite.T(), teams)
+		assert.NoError(suite.T(), err)
+	})
+}
+
 func (suite *TeamMongoRepositoryIntegrationTestSuite) setupTestEnvironment() {
 	viper.Set("MONGO_DATABASE_NAME", "basket-collection")
 	viper.Set("MONGO_TEAM_COLLECTION", "team")

@@ -39,13 +39,14 @@ func (m MongoRepository) InsertTeam(ctx context.Context, team *domain.Team) erro
 // GetAll used to get all database team data
 func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 	filter := bson.D{}
+	
 	cursor, err := m.getCollection().Find(ctx, filter)
-	if err != nil && err != mongo.ErrNoDocuments {
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		log.Error("error to get team data on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return []*domain.Team{}, err
 	}
 
-	if cursor == nil || err == mongo.ErrNoDocuments {
+	if cursor == nil || errors.Is(err, mongo.ErrNoDocuments) {
 		return []*domain.Team{}, domain.ErrNotFound
 	}
 
@@ -80,6 +81,20 @@ func (m MongoRepository) GetOne(ctx context.Context, teamName string) (*domain.T
 	}
 
 	return teamToReturn, nil
+}
+
+func (m MongoRepository) Delete(ctx context.Context, teamName string) error {
+	filter := bson.D{{Key: "name", Value: teamName}}
+
+	if err := m.getCollection().FindOneAndDelete(ctx, filter).Err(); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return domain.ErrNotFound
+		}
+		log.Error("error to delete team on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return err
+	}
+
+	return nil
 }
 
 func (m MongoRepository) getCollection() *mongo.Collection {
