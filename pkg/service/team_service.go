@@ -54,9 +54,24 @@ func (t TeamService) GetOneTeam(ctx context.Context, teamName string) (*domain.T
 		if errors.Is(err, domain.ErrNotFound) {
 			return &domain.Team{}, domain.ErrNotFound
 		}
+
 		log.Error("error to get one team", zap.Field{Type: zapcore.StringType, String: err.Error()})
 		return &domain.Team{}, err
 	}
 
 	return teamToReturn, nil
+}
+
+// DeleteTeam used to delete one team data
+func (t TeamService) DeleteTeam(ctx context.Context, teamName string) error {
+	if err := t.databaseRepository.Delete(ctx, teamName); err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			return domain.ErrNotFound
+		}
+
+		log.Error("error to delete team", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return err
+	}
+
+	return nil
 }

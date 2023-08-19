@@ -17,4 +17,7 @@ type TeamService interface {
 
 	//GetOneTeam used to get one team data
 	GetOneTeam(ctx context.Context, teamName string) (*domain.Team, error)
+
+	//DeleteTeam used to delete one team data
+	DeleteTeam(ctx context.Context, teamName string) error
 }

@@ -157,3 +157,50 @@ func TestGetOneTeam(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteTeam(t *testing.T) {
+	givenCtx := context.Background()
+	teamToReturn := &domain.Team{
+		Name:       "Golden State Warriors",
+		Conference: "West",
+		State:      "California",
+	}
+
+	testCases := map[string]func(*testing.T, *mocktest.TeamDatabaseRepositoryMock){
+		"should return error when error occurs on database": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
+			unexpectedError := errors.New("unexpected error")
+			notSavedTeamName := "Portland Trail Blazers"
+			service := service.NewTeamService(teamRepository)
+
+			teamRepository.On("Delete", givenCtx, notSavedTeamName).Return(unexpectedError)
+
+			err := service.DeleteTeam(givenCtx, notSavedTeamName)
+			assert.Error(t, err)
+		},
+		"should return not found error when data not found on database": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
+			notSavedTeamName := "Portland Trail Blazers"
+			service := service.NewTeamService(teamRepository)
+
+			teamRepository.On("Delete", givenCtx, notSavedTeamName).Return(domain.ErrNotFound)
+
+			err := service.DeleteTeam(givenCtx, notSavedTeamName)
+			assert.ErrorIs(t, err, domain.ErrNotFound)
+		},
+		"should return team data with success": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
+			service := service.NewTeamService(teamRepository)
+
+			teamRepository.On("Delete", givenCtx, teamToReturn.GetName()).Return(nil)
+
+			err := service.DeleteTeam(givenCtx, teamToReturn.GetName())
+			assert.NoError(t, err)
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			teamRepository := new(mocktest.TeamDatabaseRepositoryMock)
+
+			testCase(t, teamRepository)
+		})
+	}
+}
