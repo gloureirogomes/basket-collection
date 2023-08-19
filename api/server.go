@@ -47,6 +47,7 @@ func (s Server) setupRoutes() *gin.Engine {
 	routerGroup.POST("/team", s.teamHandler.CreateTeam)
 	routerGroup.GET("/teams", s.teamHandler.GetAllTeams)
 	routerGroup.GET("/team", s.teamHandler.GetOneTeam)
+	routerGroup.DELETE("/team", s.teamHandler.DeleteTeam)
 
 	return router
 }

@@ -67,7 +67,7 @@ func (t TeamHandler) GetAllTeams(ctx *gin.Context) {
 }
 
 func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
-	teamName := request.GetOneTeamSchema{}
+	teamName := request.FindOneTeamSchema{}
 	if err := ctx.ShouldBindQuery(&teamName); err != nil {
 		buildErrorResponse(ctx, http.StatusBadRequest, apiErrors.ErrBindParams)
 	}
@@ -84,6 +84,26 @@ func (t TeamHandler) GetOneTeam(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, teamToReturn)
+}
+
+func (t TeamHandler) DeleteTeam(ctx *gin.Context) {
+	teamName := request.FindOneTeamSchema{}
+	if err := ctx.ShouldBindQuery(&teamName); err != nil {
+		buildErrorResponse(ctx, http.StatusBadRequest, apiErrors.ErrBindParams)
+	}
+
+	err := t.teamService.DeleteTeam(ctx.Request.Context(), teamName.Name)
+	if errors.Is(err, domain.ErrNotFound) {
+		buildErrorResponse(ctx, http.StatusNotFound, domain.ErrNotFound)
+	}
+
+	if err != nil {
+		buildErrorResponse(ctx, http.StatusInternalServerError, err)
+		log.Error("error to delete team", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return
+	}
+
+	ctx.String(http.StatusOK, fmt.Sprintf("The %s was deleted with success", teamName.Name))
 }
 
 func buildErrorResponse(gin *gin.Context, statusCode int, err error) {

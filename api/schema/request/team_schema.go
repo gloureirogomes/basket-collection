@@ -11,8 +11,8 @@ type InsertTeamSchema struct {
 	State      string `json:"state"`
 }
 
-// GetOneTeamSchema is a struct to bind parameter for get one team data
-type GetOneTeamSchema struct {
+// FindOneTeamSchema is a struct to bind parameter for get one team data
+type FindOneTeamSchema struct {
 	Name string `form:"name"`
 }
 
@@ -32,7 +32,7 @@ func (t InsertTeamSchema) IsValid() error {
 	return nil
 }
 
-func (t GetOneTeamSchema) IsValid() error {
+func (t FindOneTeamSchema) IsValid() error {
 	if t.Name == "" {
 		return fmt.Errorf("invalid team name")
 	}
