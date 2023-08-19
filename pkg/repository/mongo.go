@@ -18,7 +18,7 @@ var log = logger.GetLogger()
 
 // mongoClient is a database struct with client informations
 type mongoClient struct {
-	client *mongo.Client
+	Client *mongo.Client
 }
 
 // newMongoClient is used to connect on mongoDB
@@ -41,7 +41,7 @@ func newMongoClient(ctx context.Context) *mongoClient {
 	}
 
 	return &mongoClient{
-		client: client,
+		Client: client,
 	}
 }
 
