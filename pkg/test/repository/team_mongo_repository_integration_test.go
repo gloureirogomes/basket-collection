@@ -57,6 +57,13 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) SetupSuite() {
 	suite.repository = repo.NewMongoRepository(ctx)
 }
 
+func (suite *TeamMongoRepositoryIntegrationTestSuite) TearDownTest() {
+	err := suite.repository.Mongo.Client.Database(viper.GetString("MONGO_DATABASE_NAME")).Drop(context.Background())
+	assert.NoError(suite.T(), err)
+
+	viper.Reset()
+}
+
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TearDownSuite() {
 	err := suite.Terminate(context.Background())
 	assert.NoError(suite.T(), err)

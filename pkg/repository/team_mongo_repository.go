@@ -13,12 +13,12 @@ import (
 )
 
 type MongoRepository struct {
-	mongo *mongoClient
+	Mongo *mongoClient
 }
 
 func NewMongoRepository(ctx context.Context) MongoRepository {
 	return MongoRepository{
-		mongo: newMongoClient(ctx),
+		Mongo: newMongoClient(ctx),
 	}
 }
 
@@ -86,5 +86,5 @@ func (m MongoRepository) getCollection() *mongo.Collection {
 	databaseName := viper.GetString("MONGO_DATABASE_NAME")
 	teamCollection := viper.GetString("MONGO_TEAM_COLLECTION")
 
-	return m.mongo.client.Database(databaseName).Collection(teamCollection)
+	return m.Mongo.Client.Database(databaseName).Collection(teamCollection)
 }
