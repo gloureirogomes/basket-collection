@@ -12,7 +12,7 @@ The ***basket-collection*** is a Rest API made with Golang, Gin Gonic and MongoD
 <div align="center">
 
 ```sh
-Golang Version: 1.20
+Golang Version: 1.21.0
 ```
 
 ![go](https://img.shields.io/badge/go-007396?&logoColor=fff&style=for-the-badge&logo=go)
