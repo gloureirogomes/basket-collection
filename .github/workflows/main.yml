@@ -33,7 +33,7 @@ jobs:
           check-latest: true
 
       - name: Run unit tests
-        run: make tests
+        run: make test
 
       - name: Run integration tests
         run: make integration-test
