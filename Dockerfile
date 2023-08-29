@@ -13,4 +13,4 @@ FROM setup as builder
 COPY . /app
 RUN make build
 
-CMD ["./basket-collection"]
+ENTRYPOINT ["/app/basket-collection"]
