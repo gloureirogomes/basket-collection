@@ -12,7 +12,7 @@ build:
 
 ## run-api: build and run api
 run-api: build
-	./${APP_NAME} api
+	./${APP_NAME}
 
 ## test: run all unit tests
 test:
@@ -21,3 +21,7 @@ test:
 ## integration test: run all integration tests
 integration-test:
 	go test -race  ./... -run Integration -count=1
+
+## kill-process: kill process running on port 8888
+kill-process:
+	sudo kill -9 $(sudo lsof -t -i:8888)
