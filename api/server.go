@@ -31,9 +31,6 @@ func NewServer() Server {
 
 func (s Server) StartServer() {
 	router := s.setupRoutes()
-	monitor := ginmetrics.GetMonitor()
-	monitor.SetMetricPath("/metrics")
-	monitor.Use(router)
 
 	if err := router.Run(fmt.Sprintf(":%s", viper.GetString("API_PORT"))); err != nil {
 		log.Fatal("error to start server", zap.Field{Type: zapcore.StringType, String: err.Error()})
