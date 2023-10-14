@@ -9,7 +9,6 @@ import (
 	"github.com/GabrielLoureiroGomes/basket-collection/pkg/repository"
 	"github.com/GabrielLoureiroGomes/basket-collection/pkg/service"
 	"github.com/gin-gonic/gin"
-	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
