@@ -23,16 +23,11 @@ Golang Version: 1.21.0
 
 - ### **Prerequisites**
 
-    - Make sure you have Golang 1.20 installed in your machine
+    - Make sure you have Golang 1.21 installed in your machine
 
 ## :hammer: Application
 
 ### Clone the repository:
-
-```sh
-# HTTPS
-  $ https://github.com/GabrielLoureiroGomes/basket-collection.git
-```
 
 ```sh
 # SSH
