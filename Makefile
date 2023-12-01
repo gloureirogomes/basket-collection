@@ -1,3 +1,5 @@
+.PHONY: setup build run-api test integration-test kill-process
+
 APP_NAME=basket-collection
 
 ## setup: run mod download and mod tidy
