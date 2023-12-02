@@ -28,6 +28,7 @@ func newMongoClient(ctx context.Context) *mongoClient {
 	user := viper.GetString("MONGO_USER")
 	password := viper.GetString("MONGO_PASSWORD")
 	databaseName := viper.GetString("MONGO_DATABASE_NAME")
+	
 	stringConnection := fmt.Sprintf("mongodb+srv://%s:%s@%s.rzlfysv.mongodb.net/?retryWrites=true&w=majority", user, password, databaseName)
 	if noAuthentication(user, password) {
 		stringConnection = fmt.Sprintf("mongodb://%s", net.JoinHostPort(host, port))
