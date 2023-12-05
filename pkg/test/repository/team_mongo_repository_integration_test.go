@@ -16,7 +16,7 @@ import (
 type TeamMongoRepositoryIntegrationTestSuite struct {
 	suite.Suite
 	testcontainers.Container
-	repository repo.MongoRepository
+	repository repo.TeamMongoRepository
 }
 
 func TestTeamMongoRepositoryIntegrationTestSuite(t *testing.T) {
@@ -54,7 +54,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) SetupSuite() {
 	viper.Set("MONGO_PORT", string(port))
 
 	suite.Container = container
-	suite.repository = repo.NewMongoRepository(ctx)
+	suite.repository = repo.NewTeamMongoRepository(ctx)
 }
 
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TearDownTest() {
@@ -88,7 +88,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsertTeam() {
 		viper.Set("MONGO_PASSWORD", "")
 		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
-		repository := repo.NewMongoRepository(givenCtx)
+		repository := repo.NewTeamMongoRepository(givenCtx)
 		err := repository.InsertTeam(givenCtx, givenTeam)
 
 		assert.NotNil(suite.T(), err)
@@ -125,7 +125,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetAll() {
 		viper.Set("MONGO_PASSWORD", "")
 		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
-		repository := repo.NewMongoRepository(givenCtx)
+		repository := repo.NewTeamMongoRepository(givenCtx)
 		teams, err := repository.GetAll(givenCtx)
 
 		assert.NotNil(suite.T(), err)
@@ -166,7 +166,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
 		viper.Set("MONGO_PASSWORD", "")
 		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
-		repository := repo.NewMongoRepository(givenCtx)
+		repository := repo.NewTeamMongoRepository(givenCtx)
 		team, err := repository.GetOne(givenCtx, givenTeam.Name)
 
 		assert.NotNil(suite.T(), err)
@@ -207,7 +207,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestDelete() {
 		viper.Set("MONGO_PASSWORD", "")
 		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
 
-		repository := repo.NewMongoRepository(givenCtx)
+		repository := repo.NewTeamMongoRepository(givenCtx)
 		err := repository.Delete(givenCtx, givenTeam.Name)
 
 		assert.NotNil(suite.T(), err)

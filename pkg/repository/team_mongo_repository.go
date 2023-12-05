@@ -12,18 +12,18 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type MongoRepository struct {
+type TeamMongoRepository struct {
 	Mongo *mongoClient
 }
 
-func NewMongoRepository(ctx context.Context) MongoRepository {
-	return MongoRepository{
+func NewTeamMongoRepository(ctx context.Context) TeamMongoRepository {
+	return TeamMongoRepository{
 		Mongo: newMongoClient(ctx),
 	}
 }
 
 // InsertTeam used to save on database team data
-func (m MongoRepository) InsertTeam(ctx context.Context, team *domain.Team) error {
+func (m TeamMongoRepository) InsertTeam(ctx context.Context, team *domain.Team) error {
 
 	teamDocumentToInsert := newTeamMongoDocument(team)
 	_, err := m.getCollection().InsertOne(ctx, teamDocumentToInsert)
@@ -37,7 +37,7 @@ func (m MongoRepository) InsertTeam(ctx context.Context, team *domain.Team) erro
 }
 
 // GetAll used to get all database team data
-func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
+func (m TeamMongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 	filter := bson.D{}
 	
 	cursor, err := m.getCollection().Find(ctx, filter)
@@ -62,7 +62,7 @@ func (m MongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
 }
 
 // GetOne used to get one database team data
-func (m MongoRepository) GetOne(ctx context.Context, teamName string) (*domain.Team, error) {
+func (m TeamMongoRepository) GetOne(ctx context.Context, teamName string) (*domain.Team, error) {
 	filter := bson.D{{Key: "name", Value: teamName}}
 
 	teamMongoDocument := TeamMongoDocument{}
@@ -83,7 +83,7 @@ func (m MongoRepository) GetOne(ctx context.Context, teamName string) (*domain.T
 	return teamToReturn, nil
 }
 
-func (m MongoRepository) Delete(ctx context.Context, teamName string) error {
+func (m TeamMongoRepository) Delete(ctx context.Context, teamName string) error {
 	filter := bson.D{{Key: "name", Value: teamName}}
 
 	if err := m.getCollection().FindOneAndDelete(ctx, filter).Err(); err != nil {
@@ -97,7 +97,7 @@ func (m MongoRepository) Delete(ctx context.Context, teamName string) error {
 	return nil
 }
 
-func (m MongoRepository) getCollection() *mongo.Collection {
+func (m TeamMongoRepository) getCollection() *mongo.Collection {
 	databaseName := viper.GetString("MONGO_DATABASE_NAME")
 	teamCollection := viper.GetString("MONGO_TEAM_COLLECTION")
 

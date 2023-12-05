@@ -21,7 +21,7 @@ type Server struct {
 }
 
 func NewServer() Server {
-	teamDatabaseRepository := repository.NewMongoRepository(context.Background())
+	teamDatabaseRepository := repository.NewTeamMongoRepository(context.Background())
 	teamService := service.NewTeamService(teamDatabaseRepository)
 	teamHandler := handler.NewTeamHandler(teamService)
 
