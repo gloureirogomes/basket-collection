@@ -14,7 +14,7 @@ import (
 
 func TestInsertTeam(t *testing.T) {
 	givenCtx := context.Background()
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
@@ -33,7 +33,7 @@ func TestInsertTeam(t *testing.T) {
 		"should return error when try to save empty team data": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
 			service := service.NewTeamService(teamRepository)
 			err := errors.New("error to insert empty data")
-			givenEmptyTeam := &domain.Team{}
+			givenEmptyTeam := domain.Team{}
 
 			teamRepository.On("InsertTeam", givenCtx, givenEmptyTeam).Return(err)
 

@@ -35,7 +35,7 @@ func (t TeamHandler) CreateTeam(ctx *gin.Context) {
 		return
 	}
 
-	teamToInsert := &domain.Team{
+	teamToInsert := domain.Team{
 		Name:       teamSchemaToInsert.Name,
 		Conference: teamSchemaToInsert.Conference,
 		State:      teamSchemaToInsert.State,

@@ -23,7 +23,7 @@ func NewTeamMongoRepository(ctx context.Context) TeamMongoRepository {
 }
 
 // InsertTeam used to save on database team data
-func (m TeamMongoRepository) InsertTeam(ctx context.Context, team *domain.Team) error {
+func (m TeamMongoRepository) InsertTeam(ctx context.Context, team domain.Team) error {
 
 	teamDocumentToInsert := newTeamMongoDocument(team)
 	_, err := m.getCollection().InsertOne(ctx, teamDocumentToInsert)
@@ -37,23 +37,23 @@ func (m TeamMongoRepository) InsertTeam(ctx context.Context, team *domain.Team) 
 }
 
 // GetAll used to get all database team data
-func (m TeamMongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error) {
+func (m TeamMongoRepository) GetAll(ctx context.Context) ([]domain.Team, error) {
 	filter := bson.D{}
-	
+
 	cursor, err := m.getCollection().Find(ctx, filter)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		log.Error("error to get team data on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		return []*domain.Team{}, err
+		return []domain.Team{}, err
 	}
 
 	if cursor == nil || errors.Is(err, mongo.ErrNoDocuments) {
-		return []*domain.Team{}, domain.ErrNotFound
+		return []domain.Team{}, domain.ErrNotFound
 	}
 
 	teamsMongoDocument := []TeamMongoDocument{}
 	if err = cursor.All(ctx, &teamsMongoDocument); err != nil {
 		log.Error("error to parse data", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		return []*domain.Team{}, err
+		return []domain.Team{}, err
 	}
 
 	teamsToReturn := newTeamListByTeamMongoDocument(teamsMongoDocument)
@@ -62,19 +62,19 @@ func (m TeamMongoRepository) GetAll(ctx context.Context) ([]*domain.Team, error)
 }
 
 // GetOne used to get one database team data
-func (m TeamMongoRepository) GetOne(ctx context.Context, teamName string) (*domain.Team, error) {
+func (m TeamMongoRepository) GetOne(ctx context.Context, teamName string) (domain.Team, error) {
 	filter := bson.D{{Key: "name", Value: teamName}}
 
 	teamMongoDocument := TeamMongoDocument{}
 	if err := m.getCollection().FindOne(ctx, filter).Decode(&teamMongoDocument); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return &domain.Team{}, domain.ErrNotFound
+			return domain.Team{}, domain.ErrNotFound
 		}
 		log.Error("error to get one team on mongo", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		return &domain.Team{}, err
+		return domain.Team{}, err
 	}
 
-	teamToReturn := &domain.Team{
+	teamToReturn := domain.Team{
 		Name:       teamMongoDocument.Name,
 		Conference: teamMongoDocument.Conference,
 		State:      teamMongoDocument.State,

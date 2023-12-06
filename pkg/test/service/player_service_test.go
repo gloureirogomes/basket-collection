@@ -15,7 +15,7 @@ import (
 func TestInsertPlayer(t *testing.T) {
 	givenCtx := context.Background()
 
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
@@ -24,7 +24,7 @@ func TestInsertPlayer(t *testing.T) {
 	givenPlayer := &domain.Player{
 		Name:     "LeBron James",
 		Age:      38,
-		Position: domain.Position_POWER_FORWARD,
+		Position: "PF",
 		Country:  "EUA",
 		Team:     givenTeam,
 		Height:   206,

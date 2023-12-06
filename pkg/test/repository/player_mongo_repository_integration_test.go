@@ -74,16 +74,16 @@ func (suite *PlayerMongoRepositoryIntegrationTestSuite) TearDownSuite() {
 func (suite *PlayerMongoRepositoryIntegrationTestSuite) TestInsertPlayer() {
 	givenCtx := context.Background()
 	
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
 	}
 
-	givenPlayer := &domain.Player{
+	givenPlayer := domain.Player{
 		Name:     "LeBron James",
 		Age:      38,
-		Position: domain.Position_POWER_FORWARD,
+		Position: "PF",
 		Country:  "EUA",
 		Team:     givenTeam,
 		Height:   206,

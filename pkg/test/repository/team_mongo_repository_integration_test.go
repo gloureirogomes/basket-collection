@@ -73,7 +73,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TearDownSuite() {
 
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsertTeam() {
 	givenCtx := context.Background()
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
@@ -103,7 +103,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestInsertTeam() {
 
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetAll() {
 	givenCtx := context.Background()
-	givenTeams := []*domain.Team{
+	givenTeams := []domain.Team{
 		{
 			Name:       "Golden State Warriors",
 			Conference: "West",
@@ -151,7 +151,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetAll() {
 
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
 	givenCtx := context.Background()
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
@@ -181,7 +181,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
 	})
 
 	suite.Suite.T().Run("should return team with success", func(t *testing.T) {
-		suite.insertTeamsToTest(t, []*domain.Team{givenTeam})
+		suite.insertTeamsToTest(t, []domain.Team{givenTeam})
 
 		teamReturned, err := suite.repository.GetOne(givenCtx, givenTeam.Name)
 
@@ -192,7 +192,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestGetOne() {
 
 func (suite *TeamMongoRepositoryIntegrationTestSuite) TestDelete() {
 	givenCtx := context.Background()
-	givenTeam := &domain.Team{
+	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
 		State:      "California",
@@ -220,7 +220,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) TestDelete() {
 	})
 
 	suite.Suite.T().Run("should delete team with success", func(t *testing.T) {
-		suite.insertTeamsToTest(t, []*domain.Team{givenTeam})
+		suite.insertTeamsToTest(t, []domain.Team{givenTeam})
 
 		err := suite.repository.Delete(givenCtx, givenTeam.Name)
 
@@ -237,7 +237,7 @@ func (suite *TeamMongoRepositoryIntegrationTestSuite) setupTestEnvironment() {
 	viper.Set("MONGO_TEAM_COLLECTION", "team")
 }
 
-func (suite *TeamMongoRepositoryIntegrationTestSuite) insertTeamsToTest(t *testing.T, teams []*domain.Team) {
+func (suite *TeamMongoRepositoryIntegrationTestSuite) insertTeamsToTest(t *testing.T, teams []domain.Team) {
 	for _, team := range teams {
 		err := suite.repository.InsertTeam(context.Background(), team)
 		assert.NoError(t, err)

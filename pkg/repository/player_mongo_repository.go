@@ -21,7 +21,7 @@ func NewPlayerMongoRepository(ctx context.Context) PlayerMongoRepository {
 }
 
 // InsertPlayer used to save on database player data
-func (m PlayerMongoRepository) InsertPlayer(ctx context.Context, player *domain.Player) error {
+func (m PlayerMongoRepository) InsertPlayer(ctx context.Context, player domain.Player) error {
 
 	playerDocumentToInsert := newPlayerMongoDocument(player)
 	_, err := m.getCollection().InsertOne(ctx, playerDocumentToInsert)
