@@ -21,7 +21,7 @@ func TestInsertPlayer(t *testing.T) {
 		State:      "California",
 	}
 
-	givenPlayer := &domain.Player{
+	givenPlayer := domain.Player{
 		Name:     "LeBron James",
 		Age:      38,
 		Position: "PF",
@@ -44,7 +44,7 @@ func TestInsertPlayer(t *testing.T) {
 		"should return error when try to save empty team data": func(t *testing.T, playerRepository *mocktest.PlayerDatabaseRepositoryMock) {
 			service := service.NewPlayerService(playerRepository)
 			err := errors.New("error to insert empty data")
-			givenEmptyPlayer := &domain.Player{}
+			givenEmptyPlayer := domain.Player{}
 
 			playerRepository.On("InsertPlayer", givenCtx, givenEmptyPlayer).Return(err)
 

@@ -10,5 +10,5 @@ import (
 type PlayerDatabaseRepository interface {
 
 	// InsertPlayer used to save on database player data
-	InsertPlayer(ctx context.Context, player *domain.Player) error
+	InsertPlayer(ctx context.Context, player domain.Player) error
 }

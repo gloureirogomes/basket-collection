@@ -31,7 +31,7 @@ func (p PlayerHandler) CreatePlayer(ctx *gin.Context) {
 		return
 	}
 
-	playerToInsert := &domain.Player{
+	playerToInsert := domain.Player{
 		Name:     playerSchemaToInsert.Name,
 		Age:      playerSchemaToInsert.Age,
 		Position: playerSchemaToInsert.Position,

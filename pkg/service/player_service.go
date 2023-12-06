@@ -20,10 +20,10 @@ func NewPlayerService(databaseRepository repository.PlayerDatabaseRepository) Pl
 }
 
 // InsertPlayer function is used to create a player register
-func (t PlayerService) InsertPlayer(ctx context.Context, player *domain.Player) (*domain.Player, error) {
+func (t PlayerService) InsertPlayer(ctx context.Context, player domain.Player) (domain.Player, error) {
 	if err := t.databaseRepository.InsertPlayer(ctx, player); err != nil {
 		log.Error("error to insert player", zap.Field{Type: zapcore.StringType, String: err.Error()})
-		return &domain.Player{}, err
+		return domain.Player{}, err
 	}
 
 	return player, nil

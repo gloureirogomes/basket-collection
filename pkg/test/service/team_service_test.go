@@ -54,7 +54,7 @@ func TestInsertTeam(t *testing.T) {
 
 func TestGetAllTeams(t *testing.T) {
 	givenCtx := context.Background()
-	teamsToReturn := []*domain.Team{
+	teamsToReturn := []domain.Team{
 		{
 			Name:       "Los Angeles Lakers",
 			Conference: "West",
@@ -72,7 +72,7 @@ func TestGetAllTeams(t *testing.T) {
 			unexpectedError := errors.New("unexpected error")
 			service := service.NewTeamService(teamRepository)
 
-			teamRepository.On("GetAll", givenCtx).Return([]*domain.Team{}, unexpectedError)
+			teamRepository.On("GetAll", givenCtx).Return([]domain.Team{}, unexpectedError)
 
 			teamsReturned, err := service.GetAllTeams(givenCtx)
 			assert.Empty(t, teamsReturned)
@@ -81,7 +81,7 @@ func TestGetAllTeams(t *testing.T) {
 		"should return not found error when not found data on database": func(t *testing.T, teamRepository *mocktest.TeamDatabaseRepositoryMock) {
 			service := service.NewTeamService(teamRepository)
 
-			teamRepository.On("GetAll", givenCtx).Return([]*domain.Team{}, domain.ErrNotFound)
+			teamRepository.On("GetAll", givenCtx).Return([]domain.Team{}, domain.ErrNotFound)
 
 			teamsReturned, err := service.GetAllTeams(givenCtx)
 			assert.Empty(t, teamsReturned)
@@ -110,7 +110,7 @@ func TestGetAllTeams(t *testing.T) {
 
 func TestGetOneTeam(t *testing.T) {
 	givenCtx := context.Background()
-	teamToReturn := &domain.Team{
+	teamToReturn := domain.Team{
 		Name:       "Golden State Warriors",
 		Conference: "West",
 		State:      "California",
@@ -122,7 +122,7 @@ func TestGetOneTeam(t *testing.T) {
 			notSavedTeamName := "Portland Trail Blazers"
 			service := service.NewTeamService(teamRepository)
 
-			teamRepository.On("GetOne", givenCtx, notSavedTeamName).Return(&domain.Team{}, unexpectedError)
+			teamRepository.On("GetOne", givenCtx, notSavedTeamName).Return(domain.Team{}, unexpectedError)
 
 			teamReturned, err := service.GetOneTeam(givenCtx, notSavedTeamName)
 			assert.Empty(t, teamReturned)
@@ -132,7 +132,7 @@ func TestGetOneTeam(t *testing.T) {
 			notSavedTeamName := "Portland Trail Blazers"
 			service := service.NewTeamService(teamRepository)
 
-			teamRepository.On("GetOne", givenCtx, notSavedTeamName).Return(&domain.Team{}, domain.ErrNotFound)
+			teamRepository.On("GetOne", givenCtx, notSavedTeamName).Return(domain.Team{}, domain.ErrNotFound)
 
 			teamReturned, err := service.GetOneTeam(givenCtx, notSavedTeamName)
 			assert.Empty(t, teamReturned)
@@ -160,7 +160,7 @@ func TestGetOneTeam(t *testing.T) {
 
 func TestDeleteTeam(t *testing.T) {
 	givenCtx := context.Background()
-	teamToReturn := &domain.Team{
+	teamToReturn := domain.Team{
 		Name:       "Golden State Warriors",
 		Conference: "West",
 		State:      "California",

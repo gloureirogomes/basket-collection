@@ -12,7 +12,7 @@ type PlayerDatabaseRepositoryMock struct {
 }
 
 // InsertPlayer used to save on database player data
-func (m *PlayerDatabaseRepositoryMock) InsertPlayer(ctx context.Context, player *domain.Player) error {
+func (m *PlayerDatabaseRepositoryMock) InsertPlayer(ctx context.Context, player domain.Player) error {
 	arguments := m.Called(ctx, player)
 	return arguments.Error(0)
 }
