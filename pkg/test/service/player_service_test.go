@@ -58,3 +58,66 @@ func TestInsertPlayer(t *testing.T) {
 		})
 	}
 }
+
+func TestListPlayers(t *testing.T) {
+	givenCtx := context.Background()
+	givenPlayers := []domain.Player{
+		{
+			Name:     "LeBron James",
+			Age:      39,
+			Position: "SF",
+			Team: domain.Team{
+				Name:       "Los Angeles Lakers",
+				Conference: "West",
+			},
+		},
+		{
+			Name:     "Stephen Curry",
+			Age:      33,
+			Position: "PG",
+			Team: domain.Team{
+				Name:       "Golden State Warriors",
+				Conference: "West",
+			},
+		},
+	}
+
+	testCases := map[string]func(*testing.T, *mocktest.PlayerDatabaseRepositoryMock){
+		"should return error when an error occurs on database": func(t *testing.T, playerRepository *mocktest.PlayerDatabaseRepositoryMock) {
+			unexpectedError := errors.New("unexpected error")
+			service := service.NewPlayerService(playerRepository)
+
+			playerRepository.On("ListPlayers", givenCtx).Return([]domain.Player{}, unexpectedError)
+
+			playersReturned, err := service.ListPlayers(givenCtx)
+			assert.Empty(t, playersReturned)
+			assert.Error(t, err)
+		},
+		"should return not found error when not found data on database": func(t *testing.T, playerRepository *mocktest.PlayerDatabaseRepositoryMock) {
+			service := service.NewPlayerService(playerRepository)
+
+			playerRepository.On("ListPlayers", givenCtx).Return([]domain.Player{}, domain.ErrNotFound)
+
+			playersReturned, err := service.ListPlayers(givenCtx)
+			assert.Empty(t, playersReturned)
+			assert.ErrorIs(t, err, domain.ErrNotFound)
+		},
+		"should return list of players with success": func(t *testing.T, playerRepository *mocktest.PlayerDatabaseRepositoryMock) {
+			service := service.NewPlayerService(playerRepository)
+
+			playerRepository.On("ListPlayers", givenCtx).Return(givenPlayers, nil)
+
+			playersReturned, err := service.ListPlayers(givenCtx)
+			assert.ElementsMatch(t, givenPlayers, playersReturned)
+			assert.NoError(t, err)
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			playerRepository := new(mocktest.PlayerDatabaseRepositoryMock)
+
+			testCase(t, playerRepository)
+		})
+	}
+}

@@ -109,7 +109,71 @@ func (suite *PlayerMongoRepositoryIntegrationTestSuite) TestInsertPlayer() {
 	})
 }
 
+func (suite *PlayerMongoRepositoryIntegrationTestSuite) TestListPlayers() {
+	givenCtx := context.Background()
+	givenPlayers := []domain.Player{
+		{
+			Name:     "LeBron James",
+			Age:      39,
+			Position: "SF",
+			Number:   23,
+			Team: domain.Team{
+				Name:       "Los Angeles Lakers",
+				Conference: "West",
+			},
+		},
+		{
+			Name:     "Stephen Curry",
+			Age:      33,
+			Position: "PG",
+			Number:   30,
+			Team: domain.Team{
+				Name:       "Golden State Warriors",
+				Conference: "West",
+			},
+		},
+	}
+
+	suite.Suite.T().Run("should return error to try to list players on invalid database", func(t *testing.T) {
+		defer func() {
+			viper.Reset()
+			suite.setupTestEnvironment()
+		}()
+		viper.Set("MONGO_USER", "")
+		viper.Set("MONGO_PASSWORD", "")
+		viper.Set("MONGO_DATABASE_NAME", "INVALID HOST")
+
+		repository := repo.NewPlayerMongoRepository(givenCtx)
+		_, err := repository.ListPlayers(givenCtx)
+
+		assert.NotNil(suite.T(), err)
+	})
+
+	suite.Suite.T().Run("should not return error when not found players on database", func(t *testing.T) {
+		emptyReturn, err := suite.repository.ListPlayers(givenCtx)
+
+		assert.Empty(suite.T(), emptyReturn)
+		assert.NoError(suite.T(), err)
+	})
+
+	suite.Suite.T().Run("should list players with success", func(t *testing.T) {
+		suite.insertPlayersToTest(t, givenPlayers)
+
+		playersReturned, err := suite.repository.ListPlayers(givenCtx)
+
+		assert.ElementsMatch(suite.T(), givenPlayers, playersReturned)
+		assert.NoError(suite.T(), err)
+	})
+}
+
 func (suite *PlayerMongoRepositoryIntegrationTestSuite) setupTestEnvironment() {
 	viper.Set("MONGO_DATABASE_NAME", "basket-collection")
 	viper.Set("MONGO_PLAYER_COLLECTION", "player")
+}
+
+func (suite *PlayerMongoRepositoryIntegrationTestSuite) insertPlayersToTest(t *testing.T, players []domain.Player) {
+	for _, player := range players {
+		err := suite.repository.InsertPlayer(context.Background(), player)
+		assert.NoError(t, err)
+	}
 }

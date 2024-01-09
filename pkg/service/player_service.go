@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/GabrielLoureiroGomes/basket-collection/core/repository"
@@ -30,4 +31,18 @@ func (t PlayerService) InsertPlayer(ctx context.Context, player domain.Player) (
 	}
 
 	return player, nil
+}
+
+// ListPlayers function is used to list all players
+func (t PlayerService) ListPlayers(ctx context.Context) ([]domain.Player, error) {
+	players, err := t.databaseRepository.ListPlayers(ctx)
+	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			return []domain.Player{}, domain.ErrNotFound
+		}
+		log.Error("error to list players", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return []domain.Player{}, err
+	}
+
+	return players, nil
 }

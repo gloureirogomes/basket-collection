@@ -41,6 +41,7 @@ func (s Server) setupRoutes() *gin.Engine {
 	routerGroup := router.Group("/basket-collection")
 
 	routerGroup.POST("/player", s.playerHandler.CreatePlayer)
+	routerGroup.GET("/players", s.playerHandler.ListAllPlayers)
 
 	return router
 }

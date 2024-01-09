@@ -19,3 +19,19 @@ func newPlayerMongoDocument(player domain.Player) PlayerMongoDocument {
 		Team:     player.GetTeam(),
 	}
 }
+
+func newPlayerListByPlayerMongoDocument(players []PlayerMongoDocument) []domain.Player {
+	playersToReturn := []domain.Player{}
+
+	for _, player := range players {
+		playersToReturn = append(playersToReturn, domain.Player{
+			Name:     player.Name,
+			Age:      player.Age,
+			Position: player.Position,
+			Number:   player.Number,
+			Team:     player.Team,
+		})
+	}
+
+	return playersToReturn
+}

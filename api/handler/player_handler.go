@@ -54,3 +54,18 @@ func (p PlayerHandler) CreatePlayer(ctx *gin.Context) {
 
 	ctx.String(http.StatusCreated, fmt.Sprintf("The %s was inserted with success", playerInserted.GetName()))
 }
+
+func (p PlayerHandler) ListAllPlayers(ctx *gin.Context) {
+	playersToReturn, err := p.playerService.ListPlayers(ctx.Request.Context())
+	if len(playersToReturn) == 0 {
+		apiErrors.BuildErrorResponse(ctx, http.StatusNotFound, domain.ErrNotFound)
+	}
+
+	if err != nil {
+		apiErrors.BuildErrorResponse(ctx, http.StatusInternalServerError, err)
+		log.Error("error to list all players", zap.Field{Type: zapcore.StringType, String: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, playersToReturn)
+}
