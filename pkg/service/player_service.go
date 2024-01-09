@@ -5,9 +5,12 @@ import (
 
 	"github.com/GabrielLoureiroGomes/basket-collection/core/domain"
 	"github.com/GabrielLoureiroGomes/basket-collection/core/repository"
+	"github.com/GabrielLoureiroGomes/basket-collection/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+var log = logger.GetLogger()
 
 type PlayerService struct {
 	databaseRepository repository.PlayerDatabaseRepository

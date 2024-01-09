@@ -17,15 +17,15 @@ import (
 var log = logger.GetLogger()
 
 type Server struct {
-	teamHandler handler.TeamHandler
+	playerHandler handler.PlayerHandler
 }
 
 func NewServer() Server {
-	teamDatabaseRepository := repository.NewTeamMongoRepository(context.Background())
-	teamService := service.NewTeamService(teamDatabaseRepository)
-	teamHandler := handler.NewTeamHandler(teamService)
+	playerDatabaseRepository := repository.NewPlayerMongoRepository(context.Background())
+	playerService := service.NewPlayerService(playerDatabaseRepository)
+	playerHandler := handler.NewPlayerHandler(playerService)
 
-	return Server{teamHandler: teamHandler}
+	return Server{playerHandler: playerHandler}
 }
 
 func (s Server) StartServer() {
@@ -40,10 +40,7 @@ func (s Server) setupRoutes() *gin.Engine {
 	router := gin.Default()
 	routerGroup := router.Group("/basket-collection")
 
-	routerGroup.POST("/team", s.teamHandler.CreateTeam)
-	routerGroup.GET("/teams", s.teamHandler.GetAllTeams)
-	routerGroup.GET("/team", s.teamHandler.GetOneTeam)
-	routerGroup.DELETE("/team", s.teamHandler.DeleteTeam)
+	routerGroup.POST("/player", s.playerHandler.CreatePlayer)
 
 	return router
 }

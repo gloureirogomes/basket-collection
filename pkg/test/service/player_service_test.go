@@ -18,17 +18,13 @@ func TestInsertPlayer(t *testing.T) {
 	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
-		State:      "California",
 	}
 
 	givenPlayer := domain.Player{
 		Name:     "LeBron James",
 		Age:      38,
 		Position: "PF",
-		Country:  "EUA",
 		Team:     givenTeam,
-		Height:   206,
-		Weight:   113,
 	}
 
 	testCases := map[string]func(*testing.T, *mocktest.PlayerDatabaseRepositoryMock){

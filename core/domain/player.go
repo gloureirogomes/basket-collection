@@ -5,22 +5,18 @@ type Player struct {
 	Name     string
 	Age      int32
 	Position string
-	Country  string
+	Number   int32
 	Team     Team
-	Height   float32
-	Weight   int32
 }
 
-func NewPlayer(playerID string, name string, age int32, position string, country string, team Team, height float32, weight int32) Player {
+func NewPlayer(playerID string, name string, age int32, position string, number int32, team Team) Player {
 	return Player{
 		PlayerID: playerID,
 		Name:     name,
 		Age:      age,
 		Position: position,
-		Country:  country,
+		Number:   number,
 		Team:     team,
-		Height:   height,
-		Weight:   weight,
 	}
 }
 
@@ -40,18 +36,10 @@ func (p Player) GetPosition() string {
 	return p.Position
 }
 
-func (p Player) GetCountry() string {
-	return p.Country
+func (p Player) GetNumber() int32 {
+	return p.Number
 }
 
 func (p Player) GetTeam() Team {
 	return p.Team
-}
-
-func (p Player) GetHeight() float32 {
-	return p.Height
-}
-
-func (p Player) GetWeight() int32 {
-	return p.Weight
 }

@@ -73,21 +73,18 @@ func (suite *PlayerMongoRepositoryIntegrationTestSuite) TearDownSuite() {
 
 func (suite *PlayerMongoRepositoryIntegrationTestSuite) TestInsertPlayer() {
 	givenCtx := context.Background()
-	
+
 	givenTeam := domain.Team{
 		Name:       "Los Angeles Lakers",
 		Conference: "West",
-		State:      "California",
 	}
 
 	givenPlayer := domain.Player{
 		Name:     "LeBron James",
 		Age:      38,
 		Position: "PF",
-		Country:  "EUA",
+		Number:   23,
 		Team:     givenTeam,
-		Height:   206,
-		Weight:   113,
 	}
 
 	suite.Suite.T().Run("should return error to try to insert on invalid database", func(t *testing.T) {
