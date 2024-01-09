@@ -8,6 +8,5 @@ func mongoConfig() {
 	viper.SetDefault("MONGO_USER", "basket")
 	viper.SetDefault("MONGO_PASSWORD", "password-here")
 	viper.SetDefault("MONGO_DATABASE_NAME", "basket-collection")
-	viper.SetDefault("MONGO_TEAM_COLLECTION", "team")
 	viper.SetDefault("MONGO_PLAYER_COLLECTION", "player")
 }
